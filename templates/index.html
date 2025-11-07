@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crop Recommendation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  </head>
+  <style>
+        /* General body styling */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-size: 1.3em;
+            color: #f8f9fa !important;
+            font-weight: 600;
+        }
+
+        /* Form container styling */
+        .container {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1000px;
+            margin: 30px auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Header styling */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .page-header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        /* Input field styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .input-help {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        /* Button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 40px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Alert styling */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        /* Recommendation cards */
+        .recommendation-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+        }
+        .recommendation-card.best {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 3px solid #fff;
+        }
+        .crop-name {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .confidence-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .crop-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .info-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* Loading spinner */
+        .spinner-border {
+            display: none;
+        }
+        .loading .spinner-border {
+            display: inline-block;
+        }
+
+        /* Rank badge */
+        .rank-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .recommendation-card {
+            position: relative;
+        }
+    </style>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-flower1"></i> Crop Recommendation System
+        </a>
+      </div>
+    </nav>
+
+    <!-- Content Container -->
+    <div class="container">
+      <div class="page-header">
+        <h1><i class="bi bi-seedling"></i> Crop Recommendation System</h1>
+        <p>Get AI-powered crop recommendations based on your soil and climate conditions</p>
+      </div>
+
+      <!-- Error/Alert Messages -->
+      {% if error %}
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+      </div>
+      {% endif %}
+
+      {% if warnings %}
+      <div class="alert alert-warning" role="alert">
+        <i class="bi bi-exclamation-circle-fill"></i> <strong>Warning:</strong>
+        <ul class="mb-0 mt-2">
+          {% for warning in warnings %}
+          <li>{{ warning }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Form Section -->
+      <form action="/predict" method="POST" id="predictionForm">
+          <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Nitrogen"><i class="bi bi-arrow-up-circle"></i> Nitrogen (N)</label>
+                  <input type="number" id="Nitrogen" name="Nitrogen" 
+                         value="{{ form_data.get('Nitrogen', '') if form_data else '' }}"
+                         placeholder="Enter Nitrogen" class="form-control" required step="any"
+                         min="{{ input_ranges.Nitrogen[0] }}" max="{{ input_ranges.Nitrogen[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Nitrogen[0] }}-{{ input_ranges.Nitrogen[1] }} kg/ha</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Phosphorus"><i class="bi bi-arrow-down-circle"></i> Phosphorus (P)</label>
+                  <input type="number" id="Phosphorus" name="Phosphorus" 
+                         value="{{ form_data.get('Phosphorus', '') if form_data else '' }}"
+                         placeholder="Enter Phosphorus" class="form-control" required step="any"
+                         min="{{ input_ranges.Phosphorus[0] }}" max="{{ input_ranges.Phosphorus[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Phosphorus[0] }}-{{ input_ranges.Phosphorus[1] }} kg/ha</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Potassium"><i class="bi bi-arrow-left-right"></i> Potassium (K)</label>
+                  <input type="number" id="Potassium" name="Potassium" 
+                         value="{{ form_data.get('Potassium', '') if form_data else '' }}"
+                         placeholder="Enter Potassium" class="form-control" required step="any"
+                         min="{{ input_ranges.Potassium[0] }}" max="{{ input_ranges.Potassium[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Potassium[0] }}-{{ input_ranges.Potassium[1] }} kg/ha</div>
+                </div>
+              </div>
+          </div>
+
+          <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Temperature"><i class="bi bi-thermometer-half"></i> Temperature</label>
+                  <input type="number" id="Temperature" name="Temperature" 
+                         value="{{ form_data.get('Temperature', '') if form_data else '' }}"
+                         placeholder="Enter Temperature" class="form-control" required step="0.01"
+                         min="{{ input_ranges.Temperature[0] }}" max="{{ input_ranges.Temperature[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Temperature[0] }}-{{ input_ranges.Temperature[1] }} °C</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Humidity"><i class="bi bi-droplet"></i> Humidity</label>
+                  <input type="number" id="Humidity" name="Humidity" 
+                         value="{{ form_data.get('Humidity', '') if form_data else '' }}"
+                         placeholder="Enter Humidity" class="form-control" required step="0.01"
+                         min="{{ input_ranges.Humidity[0] }}" max="{{ input_ranges.Humidity[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Humidity[0] }}-{{ input_ranges.Humidity[1] }}%</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="pH"><i class="bi bi-speedometer2"></i> pH Level</label>
+                  <input type="number" id="pH" name="pH" 
+                         value="{{ form_data.get('pH', '') if form_data else '' }}"
+                         placeholder="Enter pH value" class="form-control" required step="0.01"
+                         min="{{ input_ranges.pH[0] }}" max="{{ input_ranges.pH[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.pH[0] }}-{{ input_ranges.pH[1] }}</div>
+                </div>
+              </div>
+          </div>
+
+          <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="Rainfall"><i class="bi bi-cloud-rain"></i> Rainfall</label>
+                  <input type="number" id="Rainfall" name="Rainfall" 
+                         value="{{ form_data.get('Rainfall', '') if form_data else '' }}"
+                         placeholder="Enter Rainfall" class="form-control" required step="0.01"
+                         min="{{ input_ranges.Rainfall[0] }}" max="{{ input_ranges.Rainfall[1] }}">
+                  <div class="input-help">Typical range: {{ input_ranges.Rainfall[0] }}-{{ input_ranges.Rainfall[1] }} mm</div>
+                </div>
+              </div>
+          </div>
+
+          <div class="row mt-4">
+              <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="bi bi-search"></i> Get Recommendations
+                </button>
+              </div>
+          </div>
+      </form>
+
+      <!-- Recommendations Section -->
+      {% if recommendations %}
+      <div class="mt-5">
+        <h2 class="text-center mb-4"><i class="bi bi-trophy"></i> Recommended Crops</h2>
+        {% for rec in recommendations %}
+        <div class="recommendation-card {% if rec.rank == 1 %}best{% endif %}">
+          <div class="rank-badge">#{{ rec.rank }}</div>
+          <div class="crop-name">{{ rec.name }}</div>
+          <div class="confidence-badge">
+            <i class="bi bi-check-circle"></i> Confidence: {{ rec.confidence }}%
+          </div>
+          <div class="crop-info">
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-calendar"></i> Season</div>
+              <div class="info-value">{{ rec.season }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-clock"></i> Duration</div>
+              <div class="info-value">{{ rec.duration }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label"><i class="bi bi-droplet-half"></i> Water Need</div>
+              <div class="info-value">{{ rec.water }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Form submission with loading state
+      document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+        btn.disabled = true;
+      });
+
+      // Smooth scroll to results
+      {% if recommendations %}
+      window.scrollTo({
+        top: document.querySelector('.recommendation-card').offsetTop - 100,
+        behavior: 'smooth'
+      });
+      {% endif %}
+    </script>
+  </body>
+</html>
