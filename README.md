@@ -40,12 +40,12 @@ For each recommended crop, you get:
 - Python 3.8 or higher
 - pip (Python package manager)
 
-### Installation
+### Local Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd Crop_Recommendation-main
+   git clone https://github.com/AbhiRohit459/crop-recommendation-system.git
+   cd crop-recommendation-system
    ```
 
 2. **Install dependencies**
@@ -63,6 +63,36 @@ For each recommended crop, you get:
    ```
    http://localhost:5000
    ```
+
+### 🌐 Deploy on Render
+
+1. **Push your code to GitHub** (if not already done)
+   ```bash
+   git add .
+   git commit -m "Prepare for Render deployment"
+   git push
+   ```
+
+2. **Go to Render Dashboard**
+   - Visit [render.com](https://render.com)
+   - Sign up/Login with your GitHub account
+
+3. **Create a New Web Service**
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository: `AbhiRohit459/crop-recommendation-system`
+   - Use these settings:
+     - **Name**: `crop-recommendation-system`
+     - **Environment**: `Python 3`
+     - **Build Command**: `pip install -r requirements.txt`
+     - **Start Command**: `gunicorn app:app`
+     - **Plan**: Free tier is fine for testing
+
+4. **Deploy**
+   - Click "Create Web Service"
+   - Render will automatically build and deploy your app
+   - Your app will be live at: `https://crop-recommendation-system.onrender.com` (or your custom domain)
+
+**Note**: The first deployment may take a few minutes. Subsequent deployments are faster.
 
 ## 📦 Dependencies
 
